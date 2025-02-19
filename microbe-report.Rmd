@@ -11,7 +11,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 #this is global setup,so we can set echo =F if we
-#want it to not output the code 
+#want it to not output the code in the knit document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
