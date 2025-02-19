@@ -1,0 +1,64 @@
+---
+title: "A Report on Lake Ontario's Microbes"
+author: "Autumn Pereira"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+#this is global setup,so we can set echo =F if we
+#want it to not output the code 
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Prepare our environment!
+
+```{r packages}
+#load libraryes
+library(tidyverse)
+```
+
+```{r load-data}
+#load in lake ontario microbial community data
+sample_and_taxon <- read_csv("data/sample_and_taxon.csv")
+
+```
+
+#### Lake Ontario Microbial Abundance vs Temperature
+
+```{r cells-vs-temp-plot}
+ggplot(data=sample_and_taxon)+
+  geom_smooth(aes(x=temperature, y=cells_per_ml/1000000), method= "lm", color = "grey30")+
+  geom_point(aes(x= temperature, y= cells_per_ml/1000000, color = env_group), size = 0.75)+
+  labs(x= "Temperature (°C)", y = "Cell Abundance (million/mL)", title = "Relationship Between Cell Abundances and Temperature in Lake Ontario")+
+  theme_bw()+
+  theme(legend.position= "bottom", legend.title=element_blank())
+```
+
+It seems that there is a significant positive linear relationship between cell abundances and temperature in Lake Ontario, and that deep samples are the coldest and have the fewest cells
+
+```{r data-summary, include = FALSE}
+#how many samples do i have?
+n_samples <- sample_and_taxon %>%
+  #only pick out sample ID column
+  select(sample_id) %>%
+  #number of distinct names in the column
+  n_distinct()
+
+#calculate min and max temps
+#min
+min_temp <- sample_and_taxon %>%
+  summarize(round(min(temperature), digits=1)) %>%
+  pull
+
+#max
+max_temp <- sample_and_taxon %>%
+  summarize(round(max(temperature), digits=1))%>%
+  pull
+```
+
+The total number of samples is `r n_samples`. For this set of samples, temperature ranged from a minimum of `r min_temp`°C to `r max_temp`°C.
